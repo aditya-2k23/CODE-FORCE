@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <button class="geoBtn">show user location</button>
+    <p class="showDetails">User Location details</p>
+    <p class="fullAddress">User Address</p>
+    <p class ="formattedAddress">Full User Address</p>
+
+    <script>
+
+        const showDetails = document.querySelector(".showDetails");
+        const fullAddress = document.querySelector(".fullAddress");
+        const formattedAddress = document.querySelector(".formattedAddress");
+
+        let apiEndpoint = "https://api.opencagedata.com/geocode/v1/json";
+        let apikey = "a83f041117f24e74b2e235ba14f797f7";
+    
+    // api to get user address
+        const getUserCurrentAddress = async(latitude,longitude) => {
+        // console.log(latitude);
+        let query = `${latitude},${longitude}`;
+        let apiUrl = `${apiEndpoint}?key=${apikey}&q=${query}&pretty=1`;
+
+        try{
+            const res = await fetch(apiUrl);
+            const data  = await res.json();
+            const {city,state,postcode,country}=data.results[0].components;
+            fullAddress.textContent = `User address:  ${state}, ${country}`;
+            formattedAddress.textContent = `User full address: ${data.results[0].formatted}`;
+            console.log(error);
+        } catch(error){
+            console.log(error);
+        }
+
+    };
+        // console.log(navigator.geolocation);
+        document.querySelector(" .geoBtn").addEventListener("click", () => {
+            if(navigator.geolocation){
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        // console.log(position.coords.latitude);
+                        const { latitude, longitude } = position.coords;
+                        showDetails.textContent=`the latitude ${latitude} & longitude ${longitude} `;
+                        getUserCurrentAddress(latitude,longitude);
+                }, (error) => {
+                    showDetails.textContent = error.message;
+                    console.log(error.message);
+                })
+            }
+        })
+    </script>
+</body>
+</html>
